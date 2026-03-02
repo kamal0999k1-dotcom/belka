@@ -1,0 +1,5 @@
+{
+  "name": "Remix: Coin Recharge",
+  "description": "A user interface clone of the TikTok coins recharge page, allowing users to select predefined or custom coin packages and see the total cost before proceeding.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,184 @@
+<!-- Main container -->
+<div class="max-w-md mx-auto bg-white font-sans text-gray-800">
+  <!-- Header -->
+  <header class="p-4 flex items-center justify-between border-b">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    <h1 class="text-lg font-semibold">Get Coins</h1>
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  </header>
+
+  <!-- Profile Section -->
+  <div class="p-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <img src="https://picsum.photos/40" alt="User Avatar" class="w-10 h-10 rounded-full mr-3">
+      <div>
+        <p class="font-semibold">Saikh The Helper</p>
+        <div class="flex items-center text-gray-500 text-sm">
+          <div class="w-3.5 h-3.5 bg-yellow-400 rounded-full mr-1"></div>
+          <span>83.34m</span>
+        </div>
+      </div>
+    </div>
+    <button class="text-sm text-gray-600">Log out</button>
+  </div>
+  
+  <div class="px-4 pb-4">
+    <!-- Recipient Username Input -->
+    <div class="mb-4">
+      <input 
+        id="username" 
+        type="text"
+        placeholder="Enter username" 
+        [value]="recipientUsername()"
+        (input)="handleRecipientUsernameChange($event)"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+      />
+    </div>
+
+    <!-- Recharge Packages -->
+    <div>
+      <p class="text-sm text-green-600 mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Save up to 41% compared to In-app purchase
+      </p>
+      <div class="grid grid-cols-3 gap-2">
+        @for (pkg of packages(); track pkg.id) {
+          <button 
+            (click)="selectPackage(pkg)" 
+            [class.border-yellow-400]="selectedPackageId() === pkg.id"
+            [class.border-2]="selectedPackageId() === pkg.id"
+            [class.bg-gray-50]="selectedPackageId() !== pkg.id"
+            class="p-2 border border-gray-200 rounded-md text-center hover:bg-gray-100 transition">
+            <div class="flex items-center justify-center">
+              <div class="w-4 h-4 bg-yellow-400 rounded-full mr-1.5"></div>
+              <span class="font-bold text-lg">{{ pkg.coins }}</span>
+            </div>
+            <span class="text-xs text-gray-500">R {{ formatPrice(pkg.price) }}</span>
+          </button>
+        }
+        
+        <!-- Custom Amount Button -->
+        <button 
+          (click)="selectCustom()" 
+          [class.border-yellow-400]="selectedPackageId() === 'custom'"
+          [class.border-2]="selectedPackageId() === 'custom'"
+          [class.bg-gray-50]="selectedPackageId() !== 'custom'"
+          class="p-2 border border-gray-200 rounded-md text-center hover:bg-gray-100 transition">
+            <span class="font-bold text-lg">Custom</span>
+            <span class="text-xs text-gray-500 block">Large amount supported</span>
+        </button>
+      </div>
+
+      <!-- Custom Amount Input -->
+      @if (selectedPackageId() === 'custom') {
+        <div class="mt-4">
+          <label for="custom-amount" class="block text-sm font-medium text-gray-700 mb-1">Custom Coin Amount</label>
+          <input
+            id="custom-amount"
+            type="number"
+            placeholder="Enter coin amount"
+            [value]="customAmount() || ''"
+            (input)="handleCustomInputChange($event)"
+            class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Exchange Coins Section -->
+  <div class="p-4 border-t">
+    <h2 class="font-semibold mb-2">Exchange Coins</h2>
+    <div class="flex justify-between items-center text-sm">
+      <span>Exchange for Coins</span>
+      <span class="text-gray-500"> > </span>
+    </div>
+    <p class="text-xs text-gray-400 mt-1">LIVE Gift balance: 534 M / 3456 J</p>
+  </div>
+
+  <!-- Footer / Action bar -->
+  <footer class="sticky bottom-0 bg-white p-4 border-t flex flex-col">
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-semibold">Total</span>
+      <span class="font-bold text-lg">R {{ formatPrice(totalPrice()) }}</span>
+    </div>
+    <button 
+      (click)="recharge()"
+      [disabled]="totalPrice() <= 0 || !recipientUsername()"
+      class="w-full text-white py-2.5 rounded-md font-semibold transition"
+      [class.bg-red-500]="totalPrice() > 0 && recipientUsername()"
+      [class.hover:bg-red-600]="totalPrice() > 0 && recipientUsername()"
+      [class.bg-gray-300]="totalPrice() <= 0 || !recipientUsername()"
+      [class.cursor-not-allowed]="totalPrice() <= 0 || !recipientUsername()">
+      Recharge
+    </button>
+  </footer>
+</div>
+
+<!-- Confirmation Modal -->
+@if (showConfirmationModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-sm text-center">
+      <h3 class="text-lg font-bold mb-4">Confirm Recharge</h3>
+      <div class="text-left space-y-2 mb-6">
+        <p><strong>To:</strong> {{ recipientUsername() }}</p>
+        <p><strong>Coins:</strong> {{ totalCoins() }}</p>
+        <p><strong>Total Price:</strong> R {{ formatPrice(totalPrice()) }}</p>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button (click)="cancelRecharge()" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+        <button (click)="confirmRecharge()" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Success Modal -->
+@if (showSuccessModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-8 w-11/12 max-w-sm text-center">
+      <div class="flex justify-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold mb-3">Congratulations!</h2>
+      <p class="text-gray-700 mb-2 text-md">
+        Recharge of {{ totalCoins() }} coins successful to <strong class="font-bold">{{ recipientUsername() }}</strong>.
+      </p>
+      <p class="text-gray-700 mb-6 text-md">
+        It will be added to <strong class="font-bold">{{ recipientUsername() }}</strong>'s account in 24 hours.
+      </p>
+      <button (click)="closeSuccessModal()" class="w-full bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600">
+        Done
+      </button>
+    </div>
+  </div>
+}
+
+<!-- Bank Debit Toast Notification -->
+@if (showBankNotification()) {
+  <div class="fixed top-5 right-5 z-[100] bg-white rounded-xl shadow-lg p-4 w-80 max-w-[90%] border border-gray-200 animate-slide-in-right">
+    <div class="flex items-start">
+      <!-- Icon -->
+      <div class="flex-shrink-0">
+        <svg class="h-6 w-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.5 0l-1.5 1.5m1.5-1.5l1.5 1.5M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+        </svg>
+      </div>
+      <div class="ml-3 w-0 flex-1 pt-0.5">
+        <p class="text-sm font-semibold text-gray-900">Transaction Alert</p>
+        <p class="mt-1 text-sm text-gray-600">
+          An amount of R {{ formatPrice(totalPrice()) }} has been debited from your bank account 230xxxx0432.
+        </p>
+      </div>
+    </div>
+  </div>
+}
