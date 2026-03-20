@@ -30,15 +30,51 @@
   <div class="px-4 pb-4">
     <!-- Recipient Username Input -->
     <div class="mb-4">
-      <input 
-        id="username" 
-        type="text"
-        placeholder="Enter username" 
-        [value]="recipientUsername()"
-        (input)="handleRecipientUsernameChange($event)"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
-      />
+      <div class="flex gap-2">
+        <input 
+          id="username" 
+          type="text"
+          placeholder="Enter username" 
+          [value]="recipientUsername()"
+          (input)="handleRecipientUsernameChange($event)"
+          (keyup.enter)="searchProfile()"
+          class="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+        />
+        <button 
+          (click)="searchProfile()"
+          [disabled]="isSearching() || !recipientUsername().trim()"
+          class="px-4 py-2 bg-yellow-400 text-black font-semibold rounded-md hover:bg-yellow-500 disabled:bg-gray-200 disabled:cursor-not-allowed transition text-sm">
+          @if (isSearching()) {
+            <span class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Searching...
+            </span>
+          } @else {
+            Search
+          }
+        </button>
+      </div>
+      @if (searchError()) {
+        <p class="text-red-500 text-xs mt-1">{{ searchError() }}</p>
+      }
     </div>
+
+    <!-- Searched Profile Display -->
+    @if (searchedProfile()) {
+      <div class="mb-6 p-3 bg-gray-50 rounded-lg border border-gray-100 flex items-center animate-fade-in">
+        <img [src]="searchedProfile()?.profilePicture" referrerpolicy="no-referrer" alt="Profile Picture" class="w-12 h-12 rounded-full mr-3 border-2 border-yellow-400">
+        <div class="flex-1 min-w-0">
+          <p class="font-bold text-gray-900 truncate">{{ searchedProfile()?.displayName }}</p>
+          <p class="text-sm text-gray-500 truncate">@{{ searchedProfile()?.username }}</p>
+        </div>
+        <div class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">
+          Found
+        </div>
+      </div>
+    }
 
     <!-- Recharge Packages -->
     <div>
@@ -127,10 +163,22 @@
   <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-xl p-6 w-11/12 max-w-sm text-center">
       <h3 class="text-lg font-bold mb-4">Confirm Recharge</h3>
-      <div class="text-left space-y-2 mb-6">
-        <p><strong>To:</strong> {{ recipientUsername() }}</p>
-        <p><strong>Coins:</strong> {{ totalCoins() }}</p>
-        <p><strong>Total Price:</strong> R {{ formatPrice(totalPrice()) }}</p>
+      <div class="text-left space-y-3 mb-6">
+        @if (searchedProfile()) {
+          <div class="flex items-center p-2 bg-gray-50 rounded-md">
+            <img [src]="searchedProfile()?.profilePicture" referrerpolicy="no-referrer" alt="Avatar" class="w-8 h-8 rounded-full mr-2 border border-yellow-400">
+            <div class="min-w-0">
+              <p class="font-bold text-sm truncate">{{ searchedProfile()?.displayName }}</p>
+              <p class="text-xs text-gray-500 truncate">@{{ searchedProfile()?.username }}</p>
+            </div>
+          </div>
+        } @else {
+          <p><strong>To:</strong> {{ recipientUsername() }}</p>
+        }
+        <div class="space-y-1">
+          <p class="text-sm"><strong>Coins:</strong> {{ totalCoins() }}</p>
+          <p class="text-sm"><strong>Total Price:</strong> R {{ formatPrice(totalPrice()) }}</p>
+        </div>
       </div>
       <div class="flex justify-end gap-3">
         <button (click)="cancelRecharge()" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
@@ -150,12 +198,20 @@
         </svg>
       </div>
       <h2 class="text-2xl font-bold mb-3">Congratulations!</h2>
-      <p class="text-gray-700 mb-2 text-md">
-        Recharge of {{ totalCoins() }} coins successful to <strong class="font-bold">{{ recipientUsername() }}</strong>.
-      </p>
-      <p class="text-gray-700 mb-6 text-md">
-        It will be added to <strong class="font-bold">{{ recipientUsername() }}</strong>'s account in 24 hours.
-      </p>
+      <div class="text-gray-700 mb-6 text-md space-y-2">
+        @if (searchedProfile()) {
+          <p>
+            Recharge of {{ totalCoins() }} coins successful to <strong class="font-bold">{{ searchedProfile()?.displayName }}</strong> (@{{ searchedProfile()?.username }}).
+          </p>
+        } @else {
+          <p>
+            Recharge of {{ totalCoins() }} coins successful to <strong class="font-bold">{{ recipientUsername() }}</strong>.
+          </p>
+        }
+        <p>
+          It will be added to the account in 24 hours.
+        </p>
+      </div>
       <button (click)="closeSuccessModal()" class="w-full bg-red-500 text-white py-2 rounded-md font-semibold hover:bg-red-600">
         Done
       </button>

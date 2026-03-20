@@ -31,6 +31,9 @@ export class AppComponent {
   selectedPackageId = signal<number | 'custom' | null>(null);
   customAmount = signal<number>(0);
   recipientUsername = signal<string>('');
+  searchedProfile = signal<{ profilePicture: string, username: string, displayName: string } | null>(null);
+  isSearching = signal(false);
+  searchError = signal<string | null>(null);
   showConfirmationModal = signal(false);
   showSuccessModal = signal(false);
   showBankNotification = signal(false);
@@ -68,6 +71,38 @@ export class AppComponent {
   });
 
   // Event Handlers
+  async searchProfile(): Promise<void> {
+    const username = this.recipientUsername().trim();
+    if (!username) return;
+
+    this.isSearching.set(true);
+    this.searchError.set(null);
+    this.searchedProfile.set(null);
+
+    try {
+      const response = await fetch('/api/tiktok-profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch profile');
+      }
+
+      const profile = await response.json();
+      this.searchedProfile.set(profile);
+    } catch (error: any) {
+      console.error('Search error:', error);
+      this.searchError.set(error.message);
+    } finally {
+      this.isSearching.set(false);
+    }
+  }
+
   selectPackage(pkg: CoinPackage): void {
     this.selectedPackageId.set(pkg.id);
   }
@@ -116,6 +151,7 @@ export class AppComponent {
     this.selectedPackageId.set(null);
     this.customAmount.set(0);
     this.recipientUsername.set('');
+    this.searchedProfile.set(null);
   }
 
   // UI Helpers
