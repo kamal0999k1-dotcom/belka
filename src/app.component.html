@@ -58,7 +58,12 @@
         </button>
       </div>
       @if (searchError()) {
-        <p class="text-red-500 text-xs mt-1">{{ searchError() }}</p>
+        <div class="mt-1">
+          <p class="text-red-500 text-xs">{{ searchError() }}</p>
+          @if (searchError().includes('API Key missing')) {
+            <p class="text-gray-400 text-[10px] mt-0.5">Tip: Use "demo" as username to test the flow without a key.</p>
+          }
+        </div>
       }
     </div>
 

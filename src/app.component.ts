@@ -90,14 +90,19 @@ export class AppComponent {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch profile');
+        if (errorData.setupRequired) {
+          this.searchError.set('API Key missing. Please add APIFY_TOKEN to AI Studio Secrets.');
+        } else {
+          this.searchError.set(errorData.error || 'Failed to fetch profile');
+        }
+        return;
       }
 
       const profile = await response.json();
       this.searchedProfile.set(profile);
     } catch (error: any) {
       console.error('Search error:', error);
-      this.searchError.set(error.message);
+      this.searchError.set(error.message || 'An unexpected error occurred');
     } finally {
       this.isSearching.set(false);
     }
