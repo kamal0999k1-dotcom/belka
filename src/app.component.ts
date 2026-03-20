@@ -31,7 +31,7 @@ export class AppComponent {
   selectedPackageId = signal<number | 'custom' | null>(null);
   customAmount = signal<number>(0);
   recipientUsername = signal<string>('');
-  searchedProfile = signal<{ profilePicture: string, username: string, displayName: string } | null>(null);
+  searchedProfile = signal<{ profilePicture: string, username: string, displayName: string, followerCount: number } | null>(null);
   isSearching = signal(false);
   searchError = signal<string | null>(null);
   showConfirmationModal = signal(false);

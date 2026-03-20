@@ -55,7 +55,8 @@ app.post('/api/tiktok-profile', async (req, res) => {
     res.json({
       profilePicture: profile.userMeta?.avatar || profile.avatar,
       username: profile.userMeta?.username || profile.username,
-      displayName: profile.userMeta?.nickname || profile.nickname
+      displayName: profile.userMeta?.nickname || profile.nickname,
+      followerCount: profile.stats?.followerCount || profile.userMeta?.fans || 0
     });
   } catch (error: any) {
     console.error('Error calling Apify:', error.response?.data || error.message);
